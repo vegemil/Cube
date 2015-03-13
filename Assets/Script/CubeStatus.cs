@@ -19,7 +19,20 @@ public class CubeStatus : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		PickCube();
+	}
+
+	void PickCube()
+	{
+		if (Input.GetMouseButtonDown(0))
+		{ 
+			RaycastHit hit;
+			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out hit))
+			{    
+				Debug.Log(hit.transform.parent);
+			}
+		}
 	}
 
 
