@@ -25,6 +25,7 @@ public class CubeStatus : MonoBehaviour {
 	public Direction path;
 	public List<GameObject> CubeGroups = new List<GameObject>();
 	public GameObject[] Cubes;
+	public GameObject CubeCriterion;
 	public GameObject CubeRotateParent;
 
 	bool isMouseDrag = false;
@@ -39,21 +40,22 @@ public class CubeStatus : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		pickCube = PickCube();
+		
+	
+
+		PickCube();
 		MouseButtonUp();
-		path = CalculateDirection();
-
-		if (pickCube != null && path != Direction.NONE)
+		
+		
+		if (pickCube != null)
 		{
-			Debug.Log(pickCube.name);
-			Debug.Log(path);
-			FindCubePosition();
+			CalculateDirection();	
+			if(path!= Direction.NONE)
+				FindCubePosition();
 		}
-
-
 	}
 
-	GameObject PickCube()
+	void PickCube()
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
@@ -67,10 +69,10 @@ public class CubeStatus : MonoBehaviour {
 				mouseDown = hit.collider.transform.position;
 				Debug.Log("mouseDown : " + mouseDown); 
 				isMouseDrag = true;
-				return hit.collider.gameObject;
+				Debug.Log(hit.collider.gameObject.name);
+				pickCube =  hit.collider.gameObject;
 			}
 		}
-		return null;
 	}
 
 	void MouseButtonUp()
@@ -89,12 +91,10 @@ public class CubeStatus : MonoBehaviour {
 		}
 	}
 
-	Direction CalculateDirection()
+	void CalculateDirection()
 	{
 
 		Vector3 distance = mouseDown - mouseUp;
-// 		Debug.Log("distance : " + distance);
-
 		distance.z = 0;
 		int count = 0;
 
@@ -110,50 +110,56 @@ public class CubeStatus : MonoBehaviour {
 
 		if(count >=2)
 		{
-			return Direction.NONE;
+			path = Direction.NONE;
 		}
 		else
 		{
 			if (distance.x !=0)
 			{
 				if (distance.x > 0)
-					return Direction.LEFT;
+					path = Direction.LEFT;
 				else
-					return Direction.RIGHT;
+					path = Direction.RIGHT;
 			}
 
 			if (distance.y !=0)
 			{
 				 if (distance.y > 0)
-					return Direction.DOWN;
+					 path = Direction.DOWN;
 				else
-					return Direction.UP;
+					 path = Direction.UP;
 			}
 		}
-		return Direction.NONE;
 	}
 	
 	void CubeRotate()
 	{
+		Quaternion temp = CubeRotateParent.transform.rotation;
 		float rotate = 90f;
 		switch (path)
 		{
 			case Direction.RIGHT:
 				{
-					CubeRotateParent.transform.rotation = Quaternion.Euler(0, rotate, 0);
+					temp.y -= rotate;
+					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
 					break;
 				}
 			case Direction.LEFT:
 				{
-					CubeRotateParent.transform.rotation = Quaternion.Euler(0, -rotate, 0);
+					temp.y += rotate;
+					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
 					break;
 				}
 			case Direction.UP:
 				{
+					temp.x += rotate;
+					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
 					break;
 				}
 			case Direction.DOWN:
 				{
+					temp.x -= rotate;
+					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
 					break;
 				}
 		}
@@ -168,7 +174,7 @@ public class CubeStatus : MonoBehaviour {
 				
 					for (int i = 0; i < Cubes.Length; i++ )
 					{
-						if (Cubes[i].transform.position.x == pickCube.transform.position.x)
+						if (Cubes[i].transform.position.y == pickCube.transform.position.y)
 						{
 							CubeGroups.Add(Cubes[i]);
 						}
@@ -180,7 +186,7 @@ public class CubeStatus : MonoBehaviour {
 			case Direction.UP:
 					for (int i = 0; i < Cubes.Length; i++)
 					{
-						if (Cubes[i].transform.position.y == pickCube.transform.position.y)
+						if (Cubes[i].transform.position.x == pickCube.transform.position.x)
 						{
 							CubeGroups.Add(Cubes[i]);
 						}
@@ -197,8 +203,16 @@ public class CubeStatus : MonoBehaviour {
 		}
 		CubeRotate();
 
+		foreach (GameObject gameobject in CubeGroups)
+		{
+			gameobject.transform.parent = CubeCriterion.transform;
+		}
+
+		CubeRotateParent.transform.rotation = new Quaternion(0, 0, 0, 0);
+
 		CubeGroups.Clear();
 		path = Direction.NONE;
+		pickCube = null;
 
 	}
 }
