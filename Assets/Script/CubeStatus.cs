@@ -2,12 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum Status
-{
-	CENTER,
-	DIAGONAL,
-	EDGE
-}
 
 public enum Direction
 {
@@ -20,7 +14,6 @@ public enum Direction
 
 public class CubeStatus : MonoBehaviour {
 
-	public Status status;
 	public GameObject pickCube;
 	public Direction path;
 	public List<GameObject> CubeGroups = new List<GameObject>();
@@ -41,8 +34,6 @@ public class CubeStatus : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-	
-
 		PickCube();
 		MouseButtonUp();
 		
