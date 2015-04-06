@@ -132,25 +132,45 @@ public class CubeStatus : MonoBehaviour {
 			case Direction.RIGHT:
 				{
 					temp.y -= rotate;
-					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
+					Quaternion tempX = Quaternion.Euler(temp.x, 0, 0);
+					Quaternion tempY = Quaternion.Euler(0, temp.y, 0);
+					Quaternion tempZ = Quaternion.Euler(0, 0, temp.z);
+
+					CubeRotateParent.transform.rotation = tempX * tempY * tempZ;
 					break;
 				}
 			case Direction.LEFT:
 				{
 					temp.y += rotate;
-					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
+
+					Quaternion tempX = Quaternion.Euler(temp.x, 0, 0);
+					Quaternion tempY = Quaternion.Euler(0, temp.y, 0);
+					Quaternion tempZ = Quaternion.Euler(0, 0, temp.z);
+
+					CubeRotateParent.transform.rotation = tempX * tempY * tempZ;
+
 					break;
 				}
 			case Direction.UP:
 				{
 					temp.x += rotate;
-					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
+					Quaternion tempX = Quaternion.Euler(temp.x, 0, 0);
+					Quaternion tempY = Quaternion.Euler(0, temp.y, 0);
+					Quaternion tempZ = Quaternion.Euler(0, 0, temp.z);
+
+					CubeRotateParent.transform.rotation = tempX * tempY * tempZ; 
+					
 					break;
 				}
 			case Direction.DOWN:
 				{
 					temp.x -= rotate;
-					CubeRotateParent.transform.rotation = Quaternion.Euler(temp.x, temp.y, temp.z);
+					Quaternion tempX = Quaternion.Euler(temp.x, 0, 0);
+					Quaternion tempY = Quaternion.Euler(0, temp.y, 0);
+					Quaternion tempZ = Quaternion.Euler(0, 0, temp.z);
+
+					CubeRotateParent.transform.rotation = tempX * tempY * tempZ; 
+					
 					break;
 				}
 		}
@@ -162,34 +182,34 @@ public class CubeStatus : MonoBehaviour {
 		{
 			case Direction.RIGHT:
 			case Direction.LEFT:
-				
-					for (int i = 0; i < Cubes.Length; i++ )
+
+				for (int i = 0; i < Cubes.Length; i++)
+				{
+					if (Cubes[i].transform.position.y == pickCube.transform.position.y)
 					{
-						if (Cubes[i].transform.position.y == pickCube.transform.position.y)
-						{
-							CubeGroups.Add(Cubes[i]);
-						}
+						CubeGroups.Add(Cubes[i]);
 					}
-						break;
-				
+				}
+				break;
+
 
 			case Direction.DOWN:
 			case Direction.UP:
-					for (int i = 0; i < Cubes.Length; i++)
+				for (int i = 0; i < Cubes.Length; i++)
+				{
+					if (Cubes[i].transform.position.x == pickCube.transform.position.x)
 					{
-						if (Cubes[i].transform.position.x == pickCube.transform.position.x)
-						{
-							CubeGroups.Add(Cubes[i]);
-						}
+						CubeGroups.Add(Cubes[i]);
 					}
-					break;
-				
+				}
+				break;
+
 		}
-		int temp = 1;
-		foreach(GameObject gameobject in CubeGroups)
+		int index = 1;
+		foreach (GameObject gameobject in CubeGroups)
 		{
-			Debug.Log("CubeGroups" + temp + " : " + gameobject + ", " + gameobject.transform.position );
-			temp++;
+			Debug.Log("CubeGroups" + index + " : " + gameobject + ", " + gameobject.transform.position);
+			index++;
 			gameobject.transform.parent = CubeRotateParent.transform;
 		}
 		CubeRotate();
@@ -197,6 +217,16 @@ public class CubeStatus : MonoBehaviour {
 		foreach (GameObject gameobject in CubeGroups)
 		{
 			gameobject.transform.parent = CubeCriterion.transform;
+		}
+
+		for (int i = 0; i < Cubes.Length; i++ )
+		{
+			Vector3 temp = Cubes[i].transform.position;
+			temp.x = Mathf.Round(temp.x / 0.01f) * 0.01f;
+			temp.y = Mathf.Round(temp.y / 0.01f) * 0.01f;
+			temp.z = Mathf.Round(temp.z / 0.01f) * 0.01f;
+
+			Cubes[i].transform.position = temp;
 		}
 
 		CubeRotateParent.transform.rotation = new Quaternion(0, 0, 0, 0);
